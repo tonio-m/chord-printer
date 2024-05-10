@@ -2,15 +2,17 @@
 # python chord-printer.py "Dmin7, Cmaj7, Fmaj7, Amin7"
 
 import re
+import argparse
 from sys import argv
 from itertools import chain
 
 
 CHORD_TYPES = {
-    'min7': lambda x: [x,x+3,x+7,x+10],
-    '7': lambda x: [x,x+4,x+7,x+10],
     'maj7': lambda x: [x,x+4,x+7,x+11], 
-    'min7b5': lambda x: [x,x+3,x+6,x+10]
+    '7': lambda x: [x,x+4,x+7,x+10],
+    'min7': lambda x: [x,x+3,x+7,x+10],
+    'min7b5': lambda x: [x,x+3,x+6,x+10],
+    'dim7': lambda x: [x,x+3,x+6,x+9],
 }
 
 NOTE_ENUM = {
@@ -31,7 +33,10 @@ NOTE_ENUM = {
     'a#': 10,
     'bb': 10,
     'b': 11,
+    'cb': 11,
 } 
+
+NOTE_ENUM_BACKWARDS = ['c','c#', 'd', 'd#', 'e', 'f', 'f#', 'g', 'g#', 'a', 'a#', 'b']
 
 OCTAVE_DRAWING = """
   |1| |3|  |  |6| |8| |a|  |
@@ -80,10 +85,28 @@ def paint_chord(chord):
     return concatenate_octave_drawings(first_drawing,second_drawing)
 
 
+def get_notes_strings(notes):
+    return [NOTE_ENUM_BACKWARDS[note % 12] for note in notes]
+
+
 if __name__ == '__main__':
-    chords_string = argv[1].replace('♭','b')
+
+    parser = argparse.ArgumentParser(description='Prints the notes of a chord')
+
+    parser.add_argument('chords', type=str, help='Chords to print')
+    parser.add_argument('--notes', action='store_true', help='Print the notes instead of drawing the chords')
+
+    args = parser.parse_args()
+    chords_string = args.chords.replace('♭','b')
     chords = [s.strip() for s in chords_string.split(',')]
+
     for chord in chords:
-        notes = parse_chord(chord)
-        print(chord)
-        print(paint_chord(notes))
+        print(chord,end=': ')
+
+        chord_notes = parse_chord(chord)
+        if args.notes:
+            notes = get_notes_strings(chord_notes)
+            print(' '.join(notes))
+        else:
+            chord_drawing = paint_chord(chord_notes)
+            print(chord_drawing)
