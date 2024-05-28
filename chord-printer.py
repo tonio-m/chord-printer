@@ -10,6 +10,7 @@ from itertools import chain
 CHORD_TYPES = {
     'maj7': lambda x: [x,x+4,x+7,x+11], 
     '7': lambda x: [x,x+4,x+7,x+10],
+    'dim7': lambda x: [x,x+3,x+6,x+9],
     'min7': lambda x: [x,x+3,x+7,x+10],
     'min7b5': lambda x: [x,x+3,x+6,x+10],
     'dim7': lambda x: [x,x+3,x+6,x+9],
